@@ -199,3 +199,12 @@ The repository includes an MCP (Model Context Protocol) Server that provides pro
 ## License
 
 MIT License - see [LICENSE](LICENSE) for details
+
+## Cursor Cloud specific instructions
+
+This repo is a content + static-generation project, not a long-running service: there is no app server, dev server, or UI to start, and no lint or unit-test framework configured. The "application" is the Node.js scripts in `eng/` that generate docs and validate content.
+
+- `npm run build` (alias `npm start`) regenerates `README.md` and the `docs/README.*.md` files from the front matter of files in `agents/`, `prompts/`, `instructions/`, `skills/`, and `collections/`. It rewrites generated files in place; CI (`validate-readme.yml`) fails if committed generated files are out of date, so after adding/editing any resource, run the build and commit the regenerated docs.
+- Validation = `npm run collection:validate` and `npm run skill:validate` (these are the closest thing to tests/lint).
+- `npm run skill:create` and `npm run collection:create` are interactive (readline) and prompt even when `--name`/`--description` flags are passed, so pipe stdin for non-interactive use (e.g. `printf '\nN\n' | npm run skill:create -- --name <name> --description "<desc>"`).
+- `bash scripts/fix-line-endings.sh` normalizes markdown to LF; CI (`check-line-endings.yml`) fails on CRLF, so run it before committing.
